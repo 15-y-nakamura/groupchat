@@ -1,0 +1,44 @@
+<script>
+  var targetDevice;
+  
+  function getTemperature() {
+  
+    const UUID_TEMPERATURE_SERVICE = 'e95d6100-251d-470a-a062-fa1922dfa9a8';
+    const UUID_TEMPERATURE_SERVICE_CHARACTERISTIC_PERIOD = 'e95d1b25-251d-470a-a062-fa1922dfa9a8';
+    const INTERVAL = 1000;
+  
+    navigator.bluetooth.requestDevice({
+      filters: [
+        { namePrefix: "BBC micro:bit" }
+      ],
+      optionalServices: [UUID_TEMPERATURE_SERVICE]
+    })
+    .then(device => {
+      targetDevice = device;
+      console.log("device", device);
+      return device.gatt.connect();
+    })
+    .then(server => {
+      console.log('server', server);
+      server.getPrimaryService(UUID_TEMPERATURE_SERVICE)
+      .then(service => {
+        service.getCharacteristic(UUID_TEMPERATURE_SERVICE_CHARACTERISTIC_PERIOD)
+        .then(characteristic => {
+          characteristic.writeValue(new Uint16Array([INTERVAL]));
+        })
+        .catch(error => {
+          console.log(error);
+          alert('取得間隔の設定に失敗しました。');
+        })
+      });
+    })
+    .catch(error => {
+      console.log(error);
+      alert('接続に失敗しました。');
+    });
+  
+  }
+  </script>
+  
+  <input type="button" value="micro:bitと接続する" onclick="getTemperature();"/>
+  

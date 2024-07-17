@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="text-center">
+        <h2>更新フォーム</h2>
+        <p>必要に応じて情報を変更してください。</p>
+    </div>
+      
+    <div class="col-md-6 mx-auto">
+        <h4 class="mb-3">あなたの情報</h4>
+        <form method="POST">
+            <div class="row g-3">
+                <div class="col-12">
+                    {{ form.hidden_tag() }}
+                    {{ form.username.label(for="username", class="form-label") }}
+                    {{ form.username(class="form-control", id="username", value=user.username) }}
+                </div>
+                
+                <div class="col-12">
+                    {{ form.email.label(for="email", class="form-label") }}
+                    {{ form.email(class="form-control", id="email", value=user.email) }}
+                </div>
+                
+                <div class="col-12">
+                    {{ form.password.label(for="password", class="form-label") }}
+                    {{ form.password(class="form-control", id="password", value=user.password) }}
+                </div>
+
+                <div class="col-12">
+                    {{ form.code.label(for="code", class="form-label") }}
+                    {% if user.code %}
+                    {{ form.code(class="form-control", id="code", value=user.code) }}
+                    {% else %}
+                    {{ form.code(class="form-control", id="code") }}
+                    {% endif %}
+                </div>
+            </div>
+              
+            <hr class="my-4">
+          
+            <button type="submit" class="btn btn-primary w-100">{{ form.submit.label.text }}</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

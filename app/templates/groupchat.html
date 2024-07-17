@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container mt-4">
+    <div class="chat-messages mb-3">
+        {% for message in messages %}
+        <div class="row">
+            <div class="col-12 {% if message.username == current_user.username %}text-end{% else %}text-start{% endif %}">
+                <div class="p-2 {% if message.username == current_user.username %}bg-success text-white{% else %}bg-light{% endif %} rounded d-inline-block">{{ message.username }}: {{ message.body }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <form method="POST">
+        <div class="input-group">
+            {{ form.hidden_tag() }}
+            {{ form.message(class="form-control", id="message", placeholder="ここにメッセージを入力してください...") }}
+            <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+        </div>
+    </form>
+</main>
+<script>
+    var body = document.getElementsByTagName("body")[0];
+    body.classList.add("bg-info");
+    var textarea = document.getElementById("message");
+    textarea.value = "";
+</script>
+{% endblock %}

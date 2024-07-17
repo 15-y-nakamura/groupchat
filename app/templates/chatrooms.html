@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container mt-4">
+    <div class="text-center">
+        <h2>チャットルーム</h2>
+        <p>グループチャットを始めるにはチャットルームを選択してください！</p>
+    </div>
+
+    <table class="table table-hover mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">チャットルーム</th>
+                <th scope="col">メンバー</th>
+                <th scope="col">新しい友達を追加</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rn in room_names %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td><a href="{{ url_for('app.groupchat', room_name=rn[0]) }}">{{ rn[0] }}</a></td>
+                <td>
+                    {% for usr in users[loop.index0] %}
+                    {{ usr }} 
+                    {% endfor %}
+                </td>
+                <td><button class="btn btn-outline-primary" onclick="showModal('{{rn[0]}}')">招待する</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="text-center mt-5">
+        <p>チャットルームがもっと必要な場合は、以下のフォームから新しいものを作成できます。</p>
+    </div>
+    <form method="POST" class="mt-3">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.room_name.label(class="form-label") }}
+            {{ form.room_name(class="form-control") }}
+        </div>
+        <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+    </form>
+
+    <!-- モーダル -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">モーダルのタイトル</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+                </div>
+                <form method="POST" action="{{ url_for('app.add_member') }}">
+                    <div class="modal-body">
+                        <ul class="list-group" id="modal-list">
+                            <!-- 動的コンテンツがここに入ります -->
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                        <button type="submit" class="btn btn-primary">送信</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var showModal = (room_name) => {
+            document.getElementById("exampleModalLabel").innerHTML = "チャットルーム '" + room_name + "' に招待する友達を選択してください";
+            var modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+
+            var data = JSON.stringify({'room_name': room_name});
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('app.get_friend_list') }}",
+                data: data,
+                dataType: 'json',
+                contentType: "application/json",
+            }).done((res) => {
+                let modalList = document.getElementById("modal-list");
+                modalList.innerHTML = '';  // 前のコンテンツをクリア
+                let field = document.createElement("input");
+                field.type = "hidden";
+                field.name = "room_name";
+                field.value = room_name;
+                modalList.appendChild(field);
+                for (let i = 0; i < res.length; i++) {
+                    let li = document.createElement("li");
+                    li.className = "list-group-item";
+                    let inp = document.createElement("input");
+                    inp.className = "form-check-input me-1";
+                    inp.type = "checkbox";
+                    inp.id = res[i];
+                    inp.name = "members";
+                    inp.value = res[i];
+                    let label = document.createElement("label");
+                    label.htmlFor = res[i];
+                    label.innerHTML = res[i];
+                    li.appendChild(inp);
+                    li.appendChild(label);
+                    modalList.appendChild(li);
+                }
+            }).fail((jqXHR, textStatus, errorThrown) => {
+                alert(errorThrown);
+            });
+
+            modal.show();
+        };
+    </script>
+</main>
+{% endblock %}

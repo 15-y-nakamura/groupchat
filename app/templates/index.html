@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container mt-4">
+    <div class="text-center">
+        <h2>ユーザーページ</h2>
+        <p>チャットを始めるにはフレンドを選択してください！</p>
+    </div>
+
+    <table class="table table-hover mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">ユーザー名</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <th scope="row"><a {% if not user.id == current_user.id %}href="{{ url_for('app.chat', to_=user.id) }}"{% endif %}>{{ user.id }}</a></th>
+                <td>{{ user.username }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</main>
+{% endblock %}

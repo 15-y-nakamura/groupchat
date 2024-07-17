@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}新規登録{% endblock %}
+
+{% block content %}
+<main class="bg-light py-5">
+  <div class="container">
+    <div class="pt-5 text-center">
+      <h2>登録フォーム</h2>
+      <p class="lead">情報を登録して参加してください！</p>
+    </div>
+
+    <div class="col-md-12 col-lg-12">
+      <h4 class="mb-3">あなたの情報</h4>
+      <form method="POST">
+        <div class="row g-3">
+          <div class="col-12">
+            {{ form.hidden_tag() }}
+            {{ form.username.label(for="username", class="form-label") }}
+            {{ form.username(class="form-control", id="username", placeholder="ユーザー名") }}
+          </div>
+
+          <div class="col-12">
+            {{ form.email.label(for="email", class="form-label") }}
+            {{ form.email(class="form-control", id="email", placeholder="you@example.com") }}
+          </div>
+
+          <div class="col-12">
+            {{ form.password.label(for="password", class="form-label") }}
+            {{ form.password(class="form-control", id="password", placeholder="パスワード") }}
+          </div>
+        </div>
+
+        <hr class="my-4">
+        {{ form.submit(class="w-100 btn btn-primary btn-lg mb-5") }}
+      </form>
+    </div>
+  </div>
+</main>
+{% endblock %}

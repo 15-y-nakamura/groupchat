@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container mt-4">
+    <div class="text-center">
+        <h2>フレンドリスト</h2>
+        <p>チャットを始めるにはフレンドを選択してください！</p>
+    </div>
+
+    <table class="table table-hover mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">フレンド名</th>
+                <th scope="col">ステータス</th>
+                <th scope="col">アクション</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requesting %}
+            <tr>
+                <td>{{ req.username }}</td>
+                <td>リクエスト中</td>
+                <td>.</td>
+            </tr>
+            {% endfor %}
+            {% for req in requested %}
+            <tr>
+                <td>{{ req.username }}</td>
+                <td>リクエストされた</td>
+                <td>
+                    <form method="POST" action="{{ url_for('app.accept_user') }}" class="d-inline">
+                        <input type="hidden" name="user_id" value="{{ req.id }}">
+                        <button type="submit" class="btn btn-success btn-sm">承認</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('app.reject_user') }}" class="d-inline">
+                        <input type="hidden" name="user_id" value="{{ req.id }}">
+                        <button type="submit" class="btn btn-danger btn-sm">拒否</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            {% for friend in friends %}
+            <tr>
+                <td><a {% if not friend.id == current_user.id %}href="{{ url_for('app.chat', to_=friend.id) }}"{% endif %}>{{ friend.username }}</a></td>
+                <td>フレンド</td>
+                <td>
+                    <form method="POST" action="{{ url_for('app.delete_friend') }}">
+                        <input type="hidden" name="friend_id" value="{{ friend.id }}">
+                        <button type="submit" class="btn btn-danger btn-sm">削除</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="text-center mt-5">
+        <h2>フレンドリクエストフォーム</h2>
+        <p>ユーザーにフレンドリクエストを送信してください！</p>
+    </div>
+      
+    <form method="POST" class="mt-3">
+        <div class="row g-3">
+            <div class="col-12">
+                {{ form.hidden_tag() }}
+                {{ form.code.label(for="code", class="form-label") }}
+                {{ form.code(class="form-control", id="code", placeholder="ユーザーコード") }}
+            </div>
+        </div>
+        <p class="mt-3">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-info">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </p>
+        <button type="submit" class="btn btn-primary mt-3">{{ form.submit.label.text }}</button>
+    </form>
+</main>
+{% endblock %}
